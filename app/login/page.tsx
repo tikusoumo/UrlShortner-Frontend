@@ -1,23 +1,29 @@
-'use client'
-import { Canvas } from "@react-three/fiber";
+"use client";
+import { Canvas, useFrame } from "@react-three/fiber";
 
-import React from "react";
+import React, { useRef } from "react";
 
 export default function Login() {
   return (
-    <>
+    <div className="h-screen">
       <Canvas>
-            <Cube/>
+        <ambientLight intensity={2} />
+        <directionalLight position={[2,1,1]}/>
+        <Cube />
       </Canvas>
-    </>
+    </div>
   );
 }
-function Cube(){
-    return(
-        <mesh>
-        <boxBufferGeometry attach="geometry" args={[2,1,1]}/>
-        <meshStandardMaterial attach="material" color="hotpink"/>
-        </mesh>
-    )
+function Cube() {
+  const mesh = useRef(null);
+  useFrame((state, delta) => {
+    mesh.current.rotation.x += delta * 0.51;
+    mesh.current.rotation.y += delta * 0.51;
+  });
+  return (
+    <mesh ref={mesh}>
+      <boxGeometry attach="geometry" args={[2, 1, 1]} />
+      <meshStandardMaterial attach="material" color="hotpink" />
+    </mesh>
+  );
 }
-
