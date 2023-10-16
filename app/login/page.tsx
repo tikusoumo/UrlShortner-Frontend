@@ -1,29 +1,30 @@
 "use client";
-import { Canvas, useFrame } from "@react-three/fiber";
 
+import { Canvas, useFrame,useThree  } from "@react-three/fiber";
+import { easing } from 'maath'
 import React, { useRef } from "react";
+import { WaveMaterial } from "../Glsl/WaveMaterial";
 
 export default function Login() {
   return (
     <div className="h-screen">
-      <Canvas>
-        <ambientLight intensity={2} />
-        <directionalLight position={[2,1,1]}/>
-        <Cube />
-      </Canvas>
+     <Canvas>
+      <ShaderPlane />
+    </Canvas>
     </div>
   );
 }
-function Cube() {
-  const mesh = useRef(null);
+function ShaderPlane() {
+  const ref = useRef()
+  const { viewport, size } = useThree()
   useFrame((state, delta) => {
-    mesh.current.rotation.x += delta * 0.51;
-    mesh.current.rotation.y += delta * 0.51;
-  });
+    ref.current.time += delta
+    easing.damp3(ref.current.pointer, state.pointer, 0.2, delta)
+  })
   return (
-    <mesh ref={mesh}>
-      <boxGeometry attach="geometry" args={[2, 1, 1]} />
-      <meshStandardMaterial attach="material" color="hotpink" />
+    <mesh scale={[viewport.width, viewport.height, 1]}>
+      <planeGeometry />
+      <waveMaterial ref={ref} key={WaveMaterial.key} resolution={[size.width * viewport.dpr, size.height * viewport.dpr]} />
     </mesh>
-  );
+  )
 }
